@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Components</title>
+    <style>
+        .btn, dw-button {
+            display: block;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 0 2rem;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            box-shadow: 0 4px 8px 0 rgba(0, 112, 243, .6);
+        }
+        .btn:hover {
+            background-color: #2185f8;
+        }
+        .btn:disabled {
+            background-color: #5aa6fd;
+        }
+        .fading {
+            animation: fading 0.5s infinite;
+        }
+        @keyframes fading {
+            0% {
+                color: #5aa6fd;
+            }
+            50% {
+                color: white;
+            }
+            100% {
+                color: #5aa6fd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <dw-button id="login" text="Login" onclick="login(this)"></dw-button>
+    <dw-button id="register" text="Register" onclick="register(this)"></dw-button>
+    <script>
+        const login = target => {
+            target.setAttribute('inprogress', 'true')
+            setTimeout(() => {
+                target.removeAttribute('inprogress')
+                console.log('login response')
+            }, 2000);
+        }
+        const register = target => {
+            target.setAttribute('inprogress', 'true')
+            setTimeout(() => {
+                target.removeAttribute('inprogress')
+                console.log('register response')
+            }, 2000);
+        }
+
+        class MyButton extends HTMLElement {
+            constructor() {
+                super()
+            }
+            static get observedAttributes() {
+                return ['inprogress']
+            }
+            connectedCallback() {
+                const text = this.getAttribute('text')
+                this.innerHTML = `<button class="btn">${text}</button>`
+            }
+            attributeChangedCallback(attribute, oldValue, newValue) {
+                const button = this.querySelector('button')
+                if (newValue) {
+                    button.textContent = 'Loading...'
+                    button.setAttribute('disabled', 'true')
+                    button.classList.add('fading')
+                } else {
+                    button.textContent = this.getAttribute('text')
+                    button.removeAttribute('disabled')
+                    button.classList.remove('fading')
+                }
+            }
+        }
+
+        customElements.define('dw-button', MyButton)
+    </script>
+</body>
+</html>
